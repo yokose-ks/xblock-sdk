@@ -1,5 +1,8 @@
-<div class="pollxblock_block">
-<p>PollXBlock: count is now
-    <span class='count'>{self.count}</span> (click me to increment).
-</p>
+<div
+    id="poll_element_id"
+    class="poll_question"
+    data-ajax-url="ajax_url"
+>
+    <!-- Hidden field to read configuration JSON from. -->
+    <div class="poll_question_div" id="element_id_json" style="display: none;">{{configuration_json}}</div>
 </div>
