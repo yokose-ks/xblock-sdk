@@ -1,0 +1,9 @@
+/* CSS for PollXBlock */
+
+.pollxblock_block .count {
+    font-weight: bold;
+}
+
+.pollxblock_block p {
+    cursor: pointer;
+}
