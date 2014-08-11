@@ -1,5 +1,6 @@
 """TO-DO: Write a description of what this XBlock is."""
 
+import json
 import pkg_resources
 
 from xblock.core import XBlock
@@ -46,33 +47,65 @@ class PollXBlock(XBlock):
         """
         template = Template(self.resource_string("static/html/pollxblock.html"))
         html = template.render(Context({
-            'configuration_json': {
-                "reset": "true",
-                "poll_answer": "",
-                "question": "<p>Do you agree with having the right to collective self-defense under international law?</p>",
+            'configuration_json': json.dumps({
                 "answers": {"yes": "Yes", "no": "No", "other": "Can\'t say"},
-                "poll_answers": {},
-                "total": 0
-            }
+                "question": "<p>Do you agree with having the right to collective self-defense under international law?</p>",
+                "poll_answer": self.poll_answer,
+                "poll_answers": self.poll_answers if self.voted else {},
+                "total": sum(self.poll_answers.values()),
+                # TODO: str(self.descriptor.xml_attributes.get('reset', 'true')).lower()
+                "reset": "true"
+            })
         }))
         frag = Fragment(html)
-        #frag = Fragment(html.format(self=self))
         frag.add_css(self.resource_string("static/css/pollxblock.css"))
         frag.add_javascript(self.resource_string("static/js/src/pollxblock.js"))
         frag.initialize_js('PollXBlock')
         return frag
 
+#    def dump_poll(self):
+#        """Dump poll information.
+#
+#        Returns:
+#            string - Serialize json.
+#        """
+#        # FIXME: hack for resolving caching `default={}` during definition
+#        # poll_answers field
+#        if self.poll_answers is None:
+#            self.poll_answers = {}
+#
+#        answers_to_json = OrderedDict()
+#
+#        # FIXME: fix this, when xblock support mutable types.
+#        # Now we use this hack.
+#        temp_poll_answers = self.poll_answers
+#
+#         # Fill self.poll_answers, prepare data for template context.
+#        for answer in self.answers:
+#            # Set default count for answer = 0.
+#            if answer['id'] not in temp_poll_answers:
+#                temp_poll_answers[answer['id']] = 0
+#            answers_to_json[answer['id']] = cgi.escape(answer['text'])
+#        self.poll_answers = temp_poll_answers
+#
+#        return json.dumps({'answers': answers_to_json,
+#            'question': cgi.escape(self.question),
+#            # to show answered poll after reload:
+#            'poll_answer': self.poll_answer,
+#            'poll_answers': self.poll_answers if self.voted else {},
+#            'total': sum(self.poll_answers.values()) if self.voted else 0,
+#            'reset': str(self.descriptor.xml_attributes.get('reset', 'true')).lower()})
+
     @XBlock.json_handler
     def get_state(self, data, suffix=''):
         """
         """
-        # Just to show data coming in...
-        assert data['hello'] == 'world'
-
-        self.count += 1
-        return {"total": 0,
-                "poll_answer": "yes",
-                "poll_answers": {"yes": 1, "other": 0, "no": 0}}
+        #return {"total": 0,
+        #        "poll_answer": "yes",
+        #        "poll_answers": {"yes": 1, "other": 0, "no": 0}}
+        return {'poll_answer': self.poll_answer,
+                'poll_answers': self.poll_answers,
+                'total': sum(self.poll_answers.values())}
 
     @XBlock.json_handler
     def answer_poll(self, data, suffix=''):
@@ -120,8 +153,6 @@ class PollXBlock(XBlock):
         return [
             ("PollXBlock",
              """<vertical_demo>
-                <pollxblock/>
-                <pollxblock/>
                 <pollxblock/>
                 </vertical_demo>
              """),
