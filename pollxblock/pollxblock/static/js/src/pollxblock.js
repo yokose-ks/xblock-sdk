@@ -48,9 +48,11 @@ function PollXBlock(runtime, element) {
 
         // Send the data to the server as an AJAX request. Attach a callback that will
         // be fired on server's response.
-        $.postWithPrefix(
-            _this.ajax_url + '/' + answer,  {},
-            function (response) {
+        $.ajax({
+            type: 'POST',
+            url: runtime.handlerUrl(element, 'answer_poll'),
+            data: JSON.stringify({"poll_answer": answer}),
+            success: function (response) {
                 console.log('success! response = ');
                 console.log(response);
 
@@ -67,7 +69,7 @@ function PollXBlock(runtime, element) {
                     });
                 }
             }
-        );
+        });
 
     }, // End-of: 'submitAnswer': function (answer, answerEl) {
 
@@ -81,10 +83,11 @@ function PollXBlock(runtime, element) {
 
         // Send the data to the server as an AJAX request. Attach a callback that will
         // be fired on server's response.
-        $.postWithPrefix(
-            this.ajax_url + '/' + 'reset_poll',
-            {},
-            function (response) {
+        $.ajax({
+            type: 'POST',
+            url: runtime.handlerUrl(element, 'reset_poll'),
+            data: '{}',
+            success: function (response) {
                 console.log('success! response = ');
                 console.log(response);
 
@@ -108,7 +111,7 @@ function PollXBlock(runtime, element) {
                     });
                 }
             }
-        );
+        });
     }, // End-of: 'submitAnswer': function (answer, answerEl) {
 
     'postInit': function () {

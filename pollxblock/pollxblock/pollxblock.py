@@ -111,10 +111,12 @@ class PollXBlock(XBlock):
     def answer_poll(self, data, suffix=''):
         """
         """
-        # Just to show data coming in...
-        assert data['hello'] == 'world'
+        poll_answer = data['poll_answer']
+        self.poll_answers[poll_answer] += 1
 
-        self.count += 1
+        self.voted = True
+        self.poll_answer = poll_answer
+
         return {"total": 1,
                 "poll_answers": {"yes": 1, "other": 0, "no": 0},
                 "callback": {"objectName": "Conditional"}}
