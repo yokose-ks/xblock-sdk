@@ -39,7 +39,7 @@ class PollXBlock(XBlock):
         """
         template = Template(self.resource_string("static/html/pollxblock.html"))
         html = template.render(Context({
-            'configuration_json': self.dump_poll(),
+            'configuration_json': self.dump_poll()
         }))
         frag = Fragment(html)
         frag.add_css(self.resource_string("static/css/pollxblock.css"))
@@ -129,8 +129,59 @@ class PollXBlock(XBlock):
         else:  # return error message
             return {'error': 'Unknown Command!'}
 
-    # TO-DO: change this to create the scenarios you'd like to see in the
-    # workbench while developing your XBlock.
+    def studio_view(self, context=None):
+        """
+        The primary view of the PollXBlock, shown to teachers
+        when editing the block.
+        """
+#        template = Template(self.resource_string("static/html/pollxblock.html"))
+#        html = template.render(Context({
+#            'configuration_json': self.dump_poll(),
+#        }))
+#        frag = Fragment(html)
+#        frag.add_css(self.resource_string("static/css/pollxblock.css"))
+#        frag.add_javascript(self.resource_string("static/js/src/pollxblock.js"))
+#        frag.initialize_js('PollXBlock')
+#        return frag
+        template = Template(self.resource_string("static/html/pollxblock_edit.html"))
+        
+        #merge answer names and answer values for easier iteration in Django template
+        answers = [[name, value] for name, value in zip(self.answerNames, self.answerValues)]
+        
+        #parameters sent to browser for edit html page
+        html = template.render(Context({
+            'display_name': self.display_name,
+            'voted': self.voted,
+            'poll_answer': self.poll_answer,
+            'poll_answers': self.poll_answers,
+            'answers': self.answers,
+            'len_answers': len(self.answers),
+            'question': self.question,
+            'reset': self.reset
+        }))
+
+        #frag = Fragment(html.format(self=self))
+        frag = Fragment(html)
+        frag.add_css(self.resource_string("static/css/pollxblock_edit.css"))
+        frag.add_javascript(self.resource_string("static/js/src/pollxblock_edit.js"))
+        frag.initialize_js('PollXBlockEdit')
+        return frag
+    
+    @XBlock.json_handler
+    def save_edit(self, data, suffix=''):
+        """
+        Handler which saves the json data into XBlock fields.
+        """
+        self.display_name = data['display_name']
+        self.voted = data['voted']
+        self.poll_answer = data['poll_answer']
+        self.poll_answers = data['poll_answers']
+        self.answers = zip(data['answerNames'], data['answerValues'])
+        self.question = data['question']
+        self.reset = data['reset']
+
+        return {'result': 'success'}
+
     @staticmethod
     def workbench_scenarios():
         """A canned scenario for display in the workbench."""
