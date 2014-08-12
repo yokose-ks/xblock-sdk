@@ -22,8 +22,8 @@ class PollXBlock(XBlock):
     poll_answers = Dict(help="All possible answers for the poll fro other students", scope=Scope.user_state_summary)
 
     # List of answers, in the form {'id': 'some id', 'text': 'the answer text'}
-    answers = List(help="Poll answers", scope=Scope.content, default=[{'id': 'yes', 'text': 'Yes'}, {'id': 'no', 'text': 'No'}, {'id': 'other', 'text': 'Can\'t say'}])  #default=[])
-    question = String(help="Poll question", scope=Scope.content, default="Do you agree with having the right to collective self-defense under international law?")  #default="")
+    answers = List(help="Poll answers", scope=Scope.content, default=[{'id': 'yes', 'text': 'Yes'}, {'id': 'no', 'text': 'No'}, {'id': 'other', 'text': 'No opinion'}])  #default=[])
+    question = String(help="Poll question", scope=Scope.content, default="Did you enjoy this video?")  #default="")
     reset = Boolean(help="Can reset/revote many time", scope=Scope.content, default=True)
 
     def resource_string(self, path):
@@ -145,9 +145,6 @@ class PollXBlock(XBlock):
 #        return frag
         template = Template(self.resource_string("static/html/pollxblock_edit.html"))
         
-        #merge answer names and answer values for easier iteration in Django template
-        answers = [[name, value] for name, value in zip(self.answerNames, self.answerValues)]
-        
         #parameters sent to browser for edit html page
         html = template.render(Context({
             'display_name': self.display_name,
@@ -155,7 +152,7 @@ class PollXBlock(XBlock):
             'poll_answer': self.poll_answer,
             'poll_answers': self.poll_answers,
             'answers': self.answers,
-            'len_answers': len(self.answers),
+            'len_answer': len(self.answers),
             'question': self.question,
             'reset': self.reset
         }))
@@ -173,11 +170,8 @@ class PollXBlock(XBlock):
         Handler which saves the json data into XBlock fields.
         """
         self.display_name = data['display_name']
-        self.voted = data['voted']
-        self.poll_answer = data['poll_answer']
-        self.poll_answers = data['poll_answers']
-        self.answers = zip(data['answerNames'], data['answerValues'])
         self.question = data['question']
+        self.answers = [{'id': x[0], 'text': x[1]} for x in zip(data['answerIds'], data['answerLabels'])]
         self.reset = data['reset']
 
         return {'result': 'success'}

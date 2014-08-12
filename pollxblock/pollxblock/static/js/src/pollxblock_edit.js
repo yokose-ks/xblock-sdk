@@ -17,7 +17,7 @@ function PollXBlockEdit(runtime, element) {
         /* Get answers */
         answerIds = [];
         answerLabels = [];
-        nAnswers = $(element).find('input[id=edit_answers]').val();
+        nAnswers = $(element).find('input[id=edit_number_of_answers]').val();
         
         var answerId, answerLabel;
         
@@ -31,18 +31,10 @@ function PollXBlockEdit(runtime, element) {
         /* Data for the model */
         var data = {
             'display_name': $('.edit-display-name', element).val(),
+            'question': $('.edit-question', element).val(),
             'answerIds': answerIds,
             'answerLabels': answerLabels,
-            /*
-            'showLabels': $('.edit-show-labels', element).is(':checked'),
-            'labelType': $(element).find('select.edit-label_type > option:selected ').val(),
-            'labelThreshold': $(element).find('input[id=edit_label_threshold]').val()|0,
-            'donut': $('.edit-donut', element).is(':checked'),
-            'width': $('.edit-width', element).val()|0,
-            'height': $('.edit-height', element).val()|0,
-            'startAngle': $('.edit-start-angle', element).val()|0,
-            'endAngle': $('.edit-end-angle', element).val()|0
-            */
+            'reset': $('.edit-reset', element).is(':checked')
         };
         
         /* AJAX call and its handler */

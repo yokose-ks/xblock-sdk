@@ -10,22 +10,15 @@
         <li class="field comp-setting-entry is-set">
             <div class="wrapper-comp-setting">
                 <label class="label setting-label">Question</label>
-                <input class="input setting-input edit-width" id="edit_width" value="{{question}}" type="text">
+                <input class="input setting-input edit-question" id="question" value="{{question}}" type="text">
                 <span class="tip setting-help">Example: Did you enjoy this video?</span>
             </div>
         </li>
         <li class="field comp-setting-entry is-set">
             <div class="wrapper-comp-setting">
-                <label class="label setting-label">Reset</label>
-                <input class="input setting-input edit-donut" id="edit_donut" type="checkbox" {% if reset %} checked {% endif %}>  Yes
-                <span class="tip setting-help">Can reset/revote many time</span>
-            </div>
-        </li>
-        <li class="field comp-setting-entry is-set">
-            <div class="wrapper-comp-setting">
                 <label class="label setting-label">Number of Available Answers</label>
-                <input class="input setting-input edit-number_of_answers" id="edit_answers" value="{{len_answer}}" type="number" min="2" max="10">
-                <span class="tip setting-help">Example: 5</span>
+                <input class="input setting-input edit-number_of_answers" id="edit_number_of_answers" value="{{len_answer}}" type="number" min="2" max="10">
+                <span class="tip setting-help">Example: 3</span>
             </div>
         </li>
         <li class="field comp-setting-entry is-set">
@@ -40,6 +33,13 @@
                     </p>
                 {% endfor %}
             </div> 
+        </li>
+        <li class="field comp-setting-entry is-set">
+            <div class="wrapper-comp-setting">
+                <label class="label setting-label">Reset</label>
+                <input class="input setting-input edit-reset" id="reset" type="checkbox" {% if reset %} checked {% endif %}>  Yes
+                <span class="tip setting-help">Can reset/revote many time</span>
+            </div>
         </li>
     </ul>
     <div class="xblock-actions">
