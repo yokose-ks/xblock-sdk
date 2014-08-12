@@ -21,9 +21,9 @@ class PollXBlock(XBlock):
     poll_answer = String(help="Student answer", scope=Scope.user_state, default="")
     poll_answers = Dict(help="All possible answers for the poll fro other students", scope=Scope.user_state_summary)
 
+    question = String(help="Poll question", scope=Scope.content, default="Did you enjoy this video?")
     # List of answers, in the form {'id': 'some id', 'text': 'the answer text'}
-    answers = List(help="Poll answers", scope=Scope.content, default=[{'id': 'yes', 'text': 'Yes'}, {'id': 'no', 'text': 'No'}, {'id': 'other', 'text': 'No opinion'}])  #default=[])
-    question = String(help="Poll question", scope=Scope.content, default="Did you enjoy this video?")  #default="")
+    answers = List(help="Poll answers", scope=Scope.content, default=[{'id': 'yes', 'text': 'Yes'}, {'id': 'no', 'text': 'No'}, {'id': 'other', 'text': 'No opinion'}])
     reset = Boolean(help="Can reset/revote many time", scope=Scope.content, default=True)
 
     def resource_string(self, path):
@@ -31,7 +31,6 @@ class PollXBlock(XBlock):
         data = pkg_resources.resource_string(__name__, path)
         return data.decode("utf8")
 
-    # TO-DO: change this view to display your data your own way.
     def student_view(self, context=None):
         """
         The primary view of the PollXBlock, shown to students
@@ -134,17 +133,8 @@ class PollXBlock(XBlock):
         The primary view of the PollXBlock, shown to teachers
         when editing the block.
         """
-#        template = Template(self.resource_string("static/html/pollxblock.html"))
-#        html = template.render(Context({
-#            'configuration_json': self.dump_poll(),
-#        }))
-#        frag = Fragment(html)
-#        frag.add_css(self.resource_string("static/css/pollxblock.css"))
-#        frag.add_javascript(self.resource_string("static/js/src/pollxblock.js"))
-#        frag.initialize_js('PollXBlock')
-#        return frag
         template = Template(self.resource_string("static/html/pollxblock_edit.html"))
-        
+
         #parameters sent to browser for edit html page
         html = template.render(Context({
             'display_name': self.display_name,
@@ -157,13 +147,12 @@ class PollXBlock(XBlock):
             'reset': self.reset
         }))
 
-        #frag = Fragment(html.format(self=self))
         frag = Fragment(html)
         frag.add_css(self.resource_string("static/css/pollxblock_edit.css"))
         frag.add_javascript(self.resource_string("static/js/src/pollxblock_edit.js"))
         frag.initialize_js('PollXBlockEdit')
         return frag
-    
+
     @XBlock.json_handler
     def save_edit(self, data, suffix=''):
         """
