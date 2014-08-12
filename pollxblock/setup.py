@@ -27,9 +27,9 @@ setup(
     packages=[
         'pollxblock',
     ],
-    install_requires=[
-        'XBlock',
-    ],
+    #install_requires=[
+    #    'XBlock',
+    #],
     entry_points={
         'xblock.v1': [
             'pollxblock = pollxblock:PollXBlock',

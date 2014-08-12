@@ -3,11 +3,10 @@
 import cgi
 import json
 from collections import OrderedDict
-
 import pkg_resources
 
 from xblock.core import XBlock
-from xblock.fields import Scope, Boolean, Dict, Integer, List, String
+from xblock.fields import Boolean, Dict, Integer, List, Scope, String
 from xblock.fragment import Fragment
 from django.template import Context, Template
 
@@ -25,7 +24,7 @@ class PollXBlock(XBlock):
     # List of answers, in the form {'id': 'some id', 'text': 'the answer text'}
     answers = List(help="Poll answers", scope=Scope.content, default=[{'id': 'yes', 'text': 'Yes'}, {'id': 'no', 'text': 'No'}, {'id': 'other', 'text': 'Can\'t say'}])  #default=[])
     question = String(help="Poll question", scope=Scope.content, default="Do you agree with having the right to collective self-defense under international law?")  #default="")
-    reset = Boolean(help="Can reset/revote many time", scope=Scope.content, default=False)
+    reset = Boolean(help="Can reset/revote many time", scope=Scope.content, default=True)
 
     def resource_string(self, path):
         """Handy helper for getting resources from our kit."""
@@ -79,7 +78,7 @@ class PollXBlock(XBlock):
             'poll_answer': self.poll_answer,
             'poll_answers': self.poll_answers if self.voted else {},
             'total': sum(self.poll_answers.values()) if self.voted else 0,
-            'reset': str(self.reset)})
+            'reset': str(self.reset).lower()})
 
     @XBlock.json_handler
     def get_state(self, data, suffix=''):
@@ -93,42 +92,42 @@ class PollXBlock(XBlock):
     def answer_poll(self, data, suffix=''):
         """
         """
-        poll_answer = data['poll_answer']
+        if not self.voted:
+            poll_answer = data['poll_answer']
 
-        # FIXME: fix this, when xblock will support mutable types.
-        # Now we use this hack.
-        temp_poll_answers = self.poll_answers
-        temp_poll_answers[poll_answer] += 1
-        self.poll_answers = temp_poll_answers
+            # FIXME: fix this, when xblock will support mutable types.
+            # Now we use this hack.
+            temp_poll_answers = self.poll_answers
+            temp_poll_answers[poll_answer] += 1
+            self.poll_answers = temp_poll_answers
 
-        self.voted = True
-        self.poll_answer = poll_answer
-        return {'poll_answers': self.poll_answers,
-                'total': sum(self.poll_answers.values()),
-                'callback': {'objectName': 'Conditional'}}
-#        poll_answer = data['poll_answer']
-#        #if poll_answer in self.poll_answers and not self.voted:
-#        self.poll_answers[poll_answer] += 1
-#
-#        self.voted = True
-#        self.poll_answer = poll_answer
-#
-#        return {"total": 1,
-#                "poll_answers": {"yes": 1, "other": 0, "no": 0},
-#                "callback": {"objectName": "Conditional"}}
+            self.voted = True
+            self.poll_answer = poll_answer
+            return {'poll_answers': self.poll_answers,
+                    'total': sum(self.poll_answers.values()),
+                    'callback': {'objectName': 'Conditional'}}
+        # TODO
+        else:  # return error message
+            return {'error': 'Unknown Command!'}
 
     @XBlock.json_handler
     def reset_poll(self, data, suffix=''):
         """
         """
-        # Just to show data coming in...
-        assert data['hello'] == 'world'
+        if self.voted and self.reset:
+            self.voted = False
 
-        self.count += 1
-        #return {"status": "success"}
-        return {
-            'status': 'success',
-        }
+            # FIXME: fix this, when xblock will support mutable types.
+            # Now we use this hack.
+            temp_poll_answers = self.poll_answers
+            temp_poll_answers[self.poll_answer] -= 1
+            self.poll_answers = temp_poll_answers
+
+            self.poll_answer = ''
+            return {'status': 'success'}
+        # TODO
+        else:  # return error message
+            return {'error': 'Unknown Command!'}
 
     # TO-DO: change this to create the scenarios you'd like to see in the
     # workbench while developing your XBlock.
@@ -138,6 +137,7 @@ class PollXBlock(XBlock):
         return [
             ("PollXBlock",
              """<vertical_demo>
+                <pollxblock/>
                 <pollxblock/>
                 </vertical_demo>
              """),

@@ -320,11 +320,12 @@ function PollXBlock(runtime, element) {
         }
     } // End-of: function PollMain(el) {
 
+    /*
     function updateCount(result) {
         $('.count', element).text(result.count);
     }
 
-    var handlerUrl = runtime.handlerUrl(element, 'answer_poll');
+    var handlerUrl = runtime.handlerUrl(element, 'increment_count');
 
     $('p', element).click(function(eventObject) {
         $.ajax({
@@ -334,9 +335,9 @@ function PollXBlock(runtime, element) {
             success: updateCount
         });
     });
+    */
 
     $(function ($) {
-        /* Here's where you'd do things on page load. */
         new PollMain(element);
     });
 }
