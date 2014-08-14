@@ -135,9 +135,6 @@ function PollXBlock(runtime, element) {
         // Get the DOM id of the question.
         this.id = this.questionEl.attr('id');
 
-        // Get the URL to which we will post the users answer to the question.
-        this.ajax_url = this.questionEl.data('ajax-url');
-
         this.questionHtmlMarkup = $('<div />').html(this.jsonConfig.question).text();
         this.questionEl.append(this.questionHtmlMarkup);
 

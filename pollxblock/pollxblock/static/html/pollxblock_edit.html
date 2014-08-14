@@ -17,7 +17,7 @@
         <li class="field comp-setting-entry is-set">
             <div class="wrapper-comp-setting">
                 <label class="label setting-label">Number of Available Answers</label>
-                <input class="input setting-input edit-number_of_answers" id="edit_number_of_answers" value="{{len_answer}}" type="number" min="2" max="10">
+                <input class="input setting-input edit-number_of_groups" id="edit_number_of_answers" value="{{number_of_answers}}" type="number" min="2" max="10">
                 <span class="tip setting-help">Example: 3</span>
             </div>
         </li>
@@ -28,8 +28,8 @@
                 {% for answer in answers %}
                     <p>
                         <label class="label setting-label">Answer {{forloop.counter}}</label>
-                        <input class="input setting-input answer-id" name="answer{{forloop.counter}}_id" id="answer{{forloop.counter}}_id" value="{{answer.id}}" type="text">
-                        <input class="input setting-input answer-label" name="answer{{forloop.counter}}_label" id="answer{{forloop.counter}}_label" value="{{answer.text}}" type="text">
+                        <input class="input setting-input group-name" name="answer{{forloop.counter}}_id" id="answer{{forloop.counter}}_id" value="{{answer.id}}" type="text">
+                        <input class="input setting-input group-value" name="answer{{forloop.counter}}_label" id="answer{{forloop.counter}}_label" value="{{answer.text}}" type="text">
                     </p>
                 {% endfor %}
             </div>

@@ -67,6 +67,7 @@ class PollXBlock(XBlock):
         for answer in self.answers:
             # Set default count for answer = 0.
             if answer['id'] not in temp_poll_answers:
+                # TODO(yokose)
                 temp_poll_answers[answer['id']] = 0
             answers_to_json[answer['id']] = cgi.escape(answer['text'])
         self.poll_answers = temp_poll_answers
@@ -142,7 +143,7 @@ class PollXBlock(XBlock):
             'poll_answer': self.poll_answer,
             'poll_answers': self.poll_answers,
             'answers': self.answers,
-            'len_answer': len(self.answers),
+            'number_of_answers': len(self.answers),
             'question': self.question,
             'reset': self.reset
         }))
