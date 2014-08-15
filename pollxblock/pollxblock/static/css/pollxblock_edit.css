@@ -1,10 +1,20 @@
 /* CSS for PollXBlock Studio View */
 
-label#name, label#value {
-    text-align:center;
-    width: 20%;
+label#label_id, label#label_text {
+    text-align: center;
 }
 
-input.group-name, input.group-value {
-    width: 20% !important;
+label.group-id, input.group-id {
+    width: 15% !important;
+}
+
+label.group-text, input.group-text {
+    width: 30% !important;
+}
+
+input.setting-input-checkbox {
+    min-width: 20px;
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
 }

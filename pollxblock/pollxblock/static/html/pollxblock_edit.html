@@ -23,13 +23,13 @@
         </li>
         <li class="field comp-setting-entry is-set">
             <div id="panel2" class="wrapper-comp-setting">
-                <label class="label setting-label">Answer</label><label class="label setting-label" id="name">ID</label><label class="label setting-label" id="value">Text</label>
+                <label class="label setting-label">Answer</label><label class="label setting-label group-id" id="label_id">ID</label><label class="label setting-label group-text" id="label_text">Text</label>
                 <span class="tip setting-help">ID example: yes<br/>Text example: Yes</span>
                 {% for answer in answers %}
                     <p>
                         <label class="label setting-label">Answer {{forloop.counter}}</label>
-                        <input class="input setting-input group-name" name="answer{{forloop.counter}}_id" id="answer{{forloop.counter}}_id" value="{{answer.id}}" type="text">
-                        <input class="input setting-input group-value" name="answer{{forloop.counter}}_text" id="answer{{forloop.counter}}_text" value="{{answer.text}}" type="text">
+                        <input class="input setting-input group-id" name="answer{{forloop.counter}}_id" id="answer{{forloop.counter}}_id" value="{{answer.id}}" type="text">
+                        <input class="input setting-input group-text" name="answer{{forloop.counter}}_text" id="answer{{forloop.counter}}_text" value="{{answer.text}}" type="text">
                     </p>
                 {% endfor %}
             </div>
@@ -37,7 +37,7 @@
         <li class="field comp-setting-entry is-set">
             <div class="wrapper-comp-setting">
                 <label class="label setting-label">Reset</label>
-                <input class="input setting-input edit-reset" id="reset" type="checkbox" {% if reset %} checked {% endif %}>  Yes
+                <input class="input setting-input setting-input-checkbox edit-reset" id="reset" type="checkbox" {% if reset %} checked {% endif %}>  Yes
                 <span class="tip setting-help">Can reset/revote many time</span>
             </div>
         </li>

@@ -91,7 +91,7 @@ function PollXBlockEdit(runtime, element) {
     function GenerateDynamicInputs(element, answerElement) {
         var nAnswers = $(answerElement).val();
 
-        var html_String = "<label class='label setting-label'>Answer</label><label class='label setting-label' id='name'>ID</label><label class='label setting-label' id='value'>Text</label><span class='tip setting-help'>ID example: yes<br/>Text example: Yes</span>";
+        var html_String = "<label class='label setting-label'>Answer</label><label class='label setting-label group-id' id='label_id'>ID</label><label class='label setting-label group-text' id='label_text'>Text</label><span class='tip setting-help'>ID example: yes<br/>Text example: Yes</span>";
         var answerId, answerText;
 
         for (var i=1;i<=nAnswers;i++){
@@ -100,17 +100,17 @@ function PollXBlockEdit(runtime, element) {
             answerText = $(element).find('input[name=answer'+i+'_text]').val();
 
             if (answerId == null){
-                html_String += "<p><label class='label setting-label'>Answer "+i+"</label><input style='margin-left: 4px;' class='input setting-input group-name' name='answer"+i+"_id' id='answer"+i+"_id' value='' type='text'>";
+                html_String += "<p><label class='label setting-label'>Answer "+i+"</label><input style='margin-left: 4px;' class='input setting-input group-id' name='answer"+i+"_id' id='answer"+i+"_id' value='' type='text'>";
             }
             else{
-                html_String += "<p><label class='label setting-label'>Answer "+i+"</label><input style='margin-left: 4px;' class='input setting-input group-name' name='answer"+i+"_id' id='answer"+i+"_id' value='"+answerId+"' type='text'>";
+                html_String += "<p><label class='label setting-label'>Answer "+i+"</label><input style='margin-left: 4px;' class='input setting-input group-id' name='answer"+i+"_id' id='answer"+i+"_id' value='"+answerId+"' type='text'>";
             }
 
             if (answerText == null){
-                html_String += "<input class='input setting-input group-value' name='answer"+i+"_text' id='answer"+i+"_text' value='' type='text'></p>";
+                html_String += "<input style='margin-left: 4px;' class='input setting-input group-teXt' name='answer"+i+"_text' id='answer"+i+"_text' value='' type='text'></p>";
             }
             else{
-                html_String += "<input class='input setting-input group-value' name='answer"+i+"_text' id='answer"+i+"_text' value='"+answerText+"' type='text'></p>";
+                html_String += "<input style='margin-left: 4px;' class='input setting-input group-text' name='answer"+i+"_text' id='answer"+i+"_text' value='"+answerText+"' type='text'></p>";
             }
         }
 
