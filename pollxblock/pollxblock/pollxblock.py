@@ -161,7 +161,7 @@ class PollXBlock(XBlock):
         """
         self.display_name = data['display_name']
         self.question = data['question']
-        self.answers = [{'id': x[0], 'text': x[1]} for x in zip(data['answerIds'], data['answerLabels'])]
+        self.answers = [{'id': x[0], 'text': x[1]} for x in zip(data['answerIds'], data['answerTexts'])]
         self.reset = data['reset']
 
         return {'result': 'success'}

@@ -16,16 +16,16 @@ function PollXBlockEdit(runtime, element) {
 
         /* Get answers */
         answerIds = [];
-        answerLabels = [];
+        answerTexts = [];
         nAnswers = $(element).find('input[id=edit_number_of_answers]').val();
 
-        var answerId, answerLabel;
+        var answerId, answerText;
 
         for (var i=1;i<=nAnswers;i++){
             answerId = $(element).find('input[name=answer'+i+'_id]').val();
-            answerLabel = $(element).find('input[name=answer'+i+'_label]').val();
+            answerText = $(element).find('input[name=answer'+i+'_text]').val();
             answerIds.push(answerId);
-            answerLabels.push(answerLabel);
+            answerTexts.push(answerText);
         }
 
         /* Data for the model */
@@ -33,7 +33,7 @@ function PollXBlockEdit(runtime, element) {
             'display_name': $('.edit-display-name', element).val(),
             'question': $('.edit-question', element).val(),
             'answerIds': answerIds,
-            'answerLabels': answerLabels,
+            'answerTexts': answerTexts,
             'reset': $('.edit-reset', element).is(':checked')
         };
 
@@ -87,17 +87,17 @@ function PollXBlockEdit(runtime, element) {
         $(numericElement).val(nmbValue);
     }
 
-    /* Generates label and inputs for each group, depending on the entered number of available groups */
+    /* Generates label and inputs for each answer, depending on the entered number of available answers */
     function GenerateDynamicInputs(element, answerElement) {
         var nAnswers = $(answerElement).val();
 
-        var html_String = "<label class='label setting-label'>Answer</label><label class='label setting-label' id='name'>ID</label><label class='label setting-label' id='value'>Label</label><span class='tip setting-help'>ID example: yes<br/>Label example: Yes</span>";
-        var answerId, answerLabel;
+        var html_String = "<label class='label setting-label'>Answer</label><label class='label setting-label' id='name'>ID</label><label class='label setting-label' id='value'>Text</label><span class='tip setting-help'>ID example: yes<br/>Text example: Yes</span>";
+        var answerId, answerText;
 
         for (var i=1;i<=nAnswers;i++){
 
             answerId = $(element).find('input[name=answer'+i+'_id]').val();
-            answerLabel = $(element).find('input[name=answer'+i+'_label]').val();
+            answerText = $(element).find('input[name=answer'+i+'_text]').val();
 
             if (answerId == null){
                 html_String += "<p><label class='label setting-label'>Answer "+i+"</label><input style='margin-left: 4px;' class='input setting-input group-name' name='answer"+i+"_id' id='answer"+i+"_id' value='' type='text'>";
@@ -106,11 +106,11 @@ function PollXBlockEdit(runtime, element) {
                 html_String += "<p><label class='label setting-label'>Answer "+i+"</label><input style='margin-left: 4px;' class='input setting-input group-name' name='answer"+i+"_id' id='answer"+i+"_id' value='"+answerId+"' type='text'>";
             }
 
-            if (answerLabel == null){
-                html_String += "<input class='input setting-input group-value' name='answer"+i+"_label' id='answer"+i+"_label' value='' type='text'></p>";
+            if (answerText == null){
+                html_String += "<input class='input setting-input group-value' name='answer"+i+"_text' id='answer"+i+"_text' value='' type='text'></p>";
             }
             else{
-                html_String += "<input class='input setting-input group-value' name='answer"+i+"_label' id='answer"+i+"_label' value='"+answerLabel+"' type='text'></p>";
+                html_String += "<input class='input setting-input group-value' name='answer"+i+"_text' id='answer"+i+"_text' value='"+answerText+"' type='text'></p>";
             }
         }
 
