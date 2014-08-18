@@ -21,6 +21,11 @@ function PollXBlock(runtime, element) {
                 return;
             }
 
+            // Prevent showing the deleted choice.
+            if (!(index in _this.answersObj)) {
+                return;
+            }
+
             percentValue = (numValue / totalValue) * 100.0;
 
             _this.answersObj[index].statsEl.show();
