@@ -107,7 +107,7 @@ function PollXBlockEdit(runtime, element) {
             }
 
             if (answerText == null){
-                html_String += "<input style='margin-left: 4px;' class='input setting-input group-teXt' name='answer"+i+"_text' id='answer"+i+"_text' value='' type='text'></p>";
+                html_String += "<input style='margin-left: 4px;' class='input setting-input group-text' name='answer"+i+"_text' id='answer"+i+"_text' value='' type='text'></p>";
             }
             else{
                 html_String += "<input style='margin-left: 4px;' class='input setting-input group-text' name='answer"+i+"_text' id='answer"+i+"_text' value='"+answerText+"' type='text'></p>";
