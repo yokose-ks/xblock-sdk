@@ -3,12 +3,14 @@
 import cgi
 import json
 from collections import OrderedDict
+import lxml.etree as etree
 import pkg_resources
 
 from xblock.core import XBlock
 from xblock.fields import Boolean, Dict, Integer, List, Scope, String
 from xblock.fragment import Fragment
 from django.template import Context, Template
+#from xml import update_from_xml, serialize_content_to_xml
 
 
 class PollXBlock(XBlock):
@@ -177,3 +179,37 @@ class PollXBlock(XBlock):
                 </vertical_demo>
              """),
         ]
+
+    @classmethod
+    def parse_xml(cls, node, runtime, keys, id_generator):
+        """Instantiate XBlock object from runtime XML definition.
+
+        Inherited by XBlock core.
+
+        """
+        block = runtime.construct_xblock_from_class(cls, keys)
+
+        return update_from_xml(block, node, validator=validator(block, strict_post_release=False))
+
+    def add_xml_to_node(self, root):
+        """
+        Serialize the XBlock to XML for exporting.
+        """
+        root.tag = 'pollxblock'
+
+        if self.display_name is not None:
+            root.set('display_name', unicode(self.display_name))
+
+        if self.reset:
+            root.set('reset', unicode(self.reset))
+
+        # question
+        el_question = etree.SubElement(root, 'question')
+        el_question.text = unicode(self.question)
+
+        # answer list
+        el_answers = etree.SubElement(root, 'answers')
+        for answer in self.answers:
+            el_answer = etree.SubElement(el_answers, 'answer')
+            el_answer.set('id', unicode(answer['id']))
+            el_answer.text = unicode(answer['text'])
