@@ -140,7 +140,7 @@ function PollXBlock(runtime, element) {
         // Get the DOM id of the question.
         this.id = this.questionEl.attr('id');
 
-        this.questionHtmlMarkup = $('<div />').html(this.jsonConfig.question).text();
+        this.questionHtmlMarkup = $('<div class="poll_question_message" />').html(this.jsonConfig.question);
         this.questionEl.append(this.questionHtmlMarkup);
 
         // When the user selects and answer, we will set this flag to true.
