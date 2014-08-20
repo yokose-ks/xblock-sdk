@@ -10,7 +10,6 @@ from xblock.core import XBlock
 from xblock.fields import Boolean, Dict, Integer, List, Scope, String
 from xblock.fragment import Fragment
 from django.template import Context, Template
-#from xml import update_from_xml, serialize_content_to_xml
 
 
 class PollXBlock(XBlock):
@@ -181,7 +180,7 @@ class PollXBlock(XBlock):
         ]
 
     @classmethod
-    def parse_xml(cls, node, runtime, keys, id_generator):
+    def parse_xml(cls, root, runtime, keys, id_generator):
         """Instantiate XBlock object from runtime XML definition.
 
         Inherited by XBlock core.
@@ -189,7 +188,75 @@ class PollXBlock(XBlock):
         """
         block = runtime.construct_xblock_from_class(cls, keys)
 
-        return update_from_xml(block, node, validator=validator(block, strict_post_release=False))
+        """
+        Update the OpenAssessment XBlock's content from an XML definition.
+
+        We need to be strict about the XML we accept, to avoid setting
+        the XBlock to an invalid state (which will then be persisted).
+
+        Args:
+            block (OpenAssessmentBlock): The open assessment block to update.
+            node (lxml.etree.Element): The XML definition of the XBlock's content.
+
+        Kwargs:
+            validator(callable): Function of the form:
+                (rubric_dict, submission_dict, assessments) -> (bool, unicode)
+                where the returned bool indicates whether the XML is semantically valid,
+                and the returned unicode is an error message.
+                `rubric_dict` is a serialized Rubric model
+                `submission_dict` contains a single key "due" which is an ISO-formatted date string.
+                `assessments` is a list of serialized Assessment models.
+
+        Returns:
+            PollXBlock
+
+        Raises:
+            UpdateFromXmlError: The XML definition is invalid or the XBlock could not be updated.
+            ValidationError: The validator indicated that the XML was not semantically valid.
+        """
+
+        # Check that the root has the correct tag
+        if root.tag != 'pollxblock':
+            raise UpdateFromXmlError(_('Every pollxblock must contain an "pollxblock" element.'))
+
+        if 'display_name' in root.attrib:
+            display_name = unicode(root.get('display_name'))
+        else:
+            raise UpdateFromXmlError(_('Every "pollxblock" element must contain a "display_name" attribute.'))
+
+        if 'reset' in root.attrib:
+            reset = bool(root.get('reset'))
+        else:
+            raise UpdateFromXmlError(_('Every "pollxblock" element must contain a "reset" attribute.'))
+
+        question_el = root.find('question')
+        if question_el is None:
+            raise UpdateFromXmlError(_('Every pollxblock must contain a "question" element.'))
+        else:
+            question = _safe_get_text(question_el)
+
+        answers_el = root.find('answers')
+        if answers_el is None:
+            raise UpdateFromXmlError(_('Every pollxblock must contain a "answers" element.'))
+
+        answers = []
+        for answer_el in answers_el.findall('answer'):
+            answer_dict = dict()
+            if 'id' in answer_el.attrib:
+                answer_dict['id'] = unicode(answer_el.get('id'))
+            else:
+                raise UpdateFromXmlError(_('Every "answer" element must contain a "id" attribute.'))
+            answer_dict['text'] = _safe_get_text(answer_el)
+            answers.append(answer_dict)
+
+        # If we've gotten this far, then we've successfully parsed the XML
+        # and validated the contents.  At long last, we can safely update the XBlock.
+        block.display_name = display_name
+        block.question = question
+        block.answers = answers
+        block.reset = reset
+
+        return block
 
     def add_xml_to_node(self, root):
         """
@@ -204,12 +271,25 @@ class PollXBlock(XBlock):
             root.set('reset', unicode(self.reset))
 
         # question
-        el_question = etree.SubElement(root, 'question')
-        el_question.text = unicode(self.question)
+        question_el = etree.SubElement(root, 'question')
+        question_el.text = unicode(self.question)
 
         # answer list
-        el_answers = etree.SubElement(root, 'answers')
+        answers_el = etree.SubElement(root, 'answers')
         for answer in self.answers:
-            el_answer = etree.SubElement(el_answers, 'answer')
-            el_answer.set('id', unicode(answer['id']))
-            el_answer.text = unicode(answer['text'])
+            answer_el = etree.SubElement(answers_el, 'answer')
+            answer_el.set('id', unicode(answer['id']))
+            answer_el.text = unicode(answer['text'])
+
+
+def _safe_get_text(element):
+    """
+    Retrieve the text from the element, safely handling empty elements.
+
+    Args:
+        element (lxml.etree.Element): The XML element.
+
+    Returns:
+        unicode
+    """
+    return unicode(element.text) if element.text is not None else u""
