@@ -185,35 +185,18 @@ class PollXBlock(XBlock):
 
         Inherited by XBlock core.
 
+        Here is a sample of PollXBlock.
+
+        <pollxblock url_name="db47ae70b9d3429abbd939e01f0661c3" display_name="Poll XBlock" reset="True">
+          <question>Did you enjoy this video?</question>
+          <answers>
+            <answer id="yes">Yes</answer>
+            <answer id="no">No</answer>
+            <answer id="other">No opinion</answer>
+          </answers>
+        </pollxblock>
         """
         block = runtime.construct_xblock_from_class(cls, keys)
-
-        """
-        Update the OpenAssessment XBlock's content from an XML definition.
-
-        We need to be strict about the XML we accept, to avoid setting
-        the XBlock to an invalid state (which will then be persisted).
-
-        Args:
-            block (OpenAssessmentBlock): The open assessment block to update.
-            node (lxml.etree.Element): The XML definition of the XBlock's content.
-
-        Kwargs:
-            validator(callable): Function of the form:
-                (rubric_dict, submission_dict, assessments) -> (bool, unicode)
-                where the returned bool indicates whether the XML is semantically valid,
-                and the returned unicode is an error message.
-                `rubric_dict` is a serialized Rubric model
-                `submission_dict` contains a single key "due" which is an ISO-formatted date string.
-                `assessments` is a list of serialized Assessment models.
-
-        Returns:
-            PollXBlock
-
-        Raises:
-            UpdateFromXmlError: The XML definition is invalid or the XBlock could not be updated.
-            ValidationError: The validator indicated that the XML was not semantically valid.
-        """
 
         # Check that the root has the correct tag
         if root.tag != 'pollxblock':
@@ -227,7 +210,7 @@ class PollXBlock(XBlock):
         if 'reset' in root.attrib:
             reset = bool(root.get('reset'))
         else:
-            raise UpdateFromXmlError(_('Every "pollxblock" element must contain a "reset" attribute.'))
+            reset = cls.reset.default
 
         question_el = root.find('question')
         if question_el is None:
