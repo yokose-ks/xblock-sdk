@@ -91,7 +91,7 @@ function PollXBlockEdit(runtime, element) {
     function GenerateDynamicInputs(element, answerElement) {
         var nAnswers = $(answerElement).val();
 
-        var html_String = "<label class='label setting-label'>Answer</label><label class='label setting-label group-id' id='label_id'>ID</label><label class='label setting-label group-text' id='label_text'>Text</label><span class='tip setting-help'>ID example: yes<br/>Text example: Yes</span>";
+        var html_String = "<label class='label setting-label'>Answer</label><label class='label setting-label group-id' id='label_id'>ID</label><label class='label setting-label group-text' id='label_text'>Text</label><span style='margin-left: 4px;' class='tip setting-help'>ID example: yes<br/>Text example: Yes</span>";
         var answerId, answerText;
 
         for (var i=1;i<=nAnswers;i++){
