@@ -25,7 +25,7 @@ class PollXBlock(XBlock):
     question = String(help="Poll question", scope=Scope.content, default="Did you enjoy this video?")
     # List of answers, in the form {'id': 'some id', 'text': 'the answer text'}
     answers = List(help="Poll answers", scope=Scope.content, default=[{'id': 'yes', 'text': 'Yes'}, {'id': 'no', 'text': 'No'}, {'id': 'other', 'text': 'No opinion'}])
-    reset = Boolean(help="Can reset/revote many time", scope=Scope.content, default=True)
+    reset = Boolean(help="Can reset/revote many time", scope=Scope.content, default=False)
 
     def resource_string(self, path):
         """Handy helper for getting resources from our kit."""
@@ -208,7 +208,7 @@ class PollXBlock(XBlock):
             raise UpdateFromXmlError(_('Every "pollxblock" element must contain a "display_name" attribute.'))
 
         if 'reset' in root.attrib:
-            reset = bool(root.get('reset'))
+            reset = _str2bool(root.get('reset'), cls.reset.default)
         else:
             reset = cls.reset.default
 
@@ -276,3 +276,15 @@ def _safe_get_text(element):
         unicode
     """
     return unicode(element.text) if element.text is not None else u""
+
+
+def _str2bool(value, default=False):
+    """
+    TO-DO: document what your function does.
+    """
+    if isinstance(value, (str, unicode)):
+        if value.lower() in ('true', 'yes'):
+            return True
+        elif value.lower() in ('false', 'no'):
+            return False
+    return default
