@@ -68,7 +68,6 @@ class PollXBlock(XBlock):
         for answer in self.answers:
             # Set default count for answer = 0.
             if answer['id'] not in temp_poll_answers:
-                # TODO(yokose)
                 temp_poll_answers[answer['id']] = 0
             answers_to_json[answer['id']] = cgi.escape(answer['text'])
         self.poll_answers = temp_poll_answers
@@ -283,8 +282,8 @@ def _str2bool(value, default=False):
     TO-DO: document what your function does.
     """
     if isinstance(value, (str, unicode)):
-        if value.lower() in ('true', 'yes'):
+        if value.lower() in ['true', 'yes']:
             return True
-        elif value.lower() in ('false', 'no'):
+        elif value.lower() in ['false', 'no']:
             return False
     return default

@@ -22,10 +22,17 @@ function PollXBlockEdit(runtime, element) {
         var answerId, answerText;
 
         for (var i=1;i<=nAnswers;i++){
-            answerId = $(element).find('input[name=answer'+i+'_id]').val();
-            answerText = $(element).find('input[name=answer'+i+'_text]').val();
-            answerIds.push(answerId);
-            answerTexts.push(answerText);
+            answerIdElement = $(element).find('input[name=answer'+i+'_id]');
+            if (!(ValidateNotEmpty(answerIdElement, element, "ID of Answer " + i))) {
+                return false;
+            }
+            answerIds.push(answerIdElement.val());
+
+            answerTextElement = $(element).find('input[name=answer'+i+'_text]');
+            if (!(ValidateNotEmpty(answerTextElement, element, "Text of Answer " + i))) {
+                return false;
+            }
+            answerTexts.push(answerTextElement.val());
         }
 
         /* Data for the model */
@@ -52,7 +59,7 @@ function PollXBlockEdit(runtime, element) {
     /* Check the validity of data in text box for editing number of available answers
        when user chooses to enter the data from keyboard */
     $(element).on('keyup', 'input#edit_number_of_answers', function(){
-        ValidateNumericData(this, element, "Number of answers", 2, 10);
+        ValidateNumericData(this, element, "Number of answers", 2, 20);
         GenerateDynamicInputs(element, this);
     });
 
@@ -60,6 +67,20 @@ function PollXBlockEdit(runtime, element) {
     $(element).on('change', 'input#edit_number_of_answers', function(){
         GenerateDynamicInputs(element, this);
     });
+
+    function ValidateNotEmpty(stringElement, element, name) {
+        var strValue = $(stringElement).val();
+
+        if (strValue.length == 0) {
+            $('.xblock-editor-error-message', element).html(name + ' is required.');
+            $('.xblock-editor-error-message', element).css('display', 'block');
+            $(stringElement).focus();
+            return false;
+        } else {
+            $('.xblock-editor-error-message', element).css('display', 'none');
+            return true;
+        }
+    }
 
     /*
         Validates data entered within numeric html input field
