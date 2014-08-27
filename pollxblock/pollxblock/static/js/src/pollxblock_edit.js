@@ -138,7 +138,7 @@ function PollXBlockEdit(runtime, element) {
         $("#panel2", element).html(html_String);
     }
 
-    $(function () {
+    $(function ($) {
         // Manually runs polyfill for input number types to correct for Firefox non-support.
         if ($.fn.inputNumber) {
             $(element).find('.setting-input-number').inputNumber();

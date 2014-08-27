@@ -1,20 +1,29 @@
-"""TO-DO: Write a description of what this XBlock is."""
+"""PollXBlock is ungraded XBlock used by students to
+to do set of polls.
+
+On the client side we show:
+If student does not yet anwered - Question with set of choices.
+If student have answered - Question with statistics for each answers.
+"""
 
 import cgi
-import json
 from collections import OrderedDict
+import json
+import logging
 import lxml.etree as etree
 import pkg_resources
 
-from xblock.core import XBlock
-from xblock.fields import Boolean, Dict, Integer, List, Scope, String
-from xblock.fragment import Fragment
 from django.template import Context, Template
+from xblock.core import XBlock
+from xblock.fields import Boolean, Dict, List, Scope, String
+from xblock.fragment import Fragment
+
+log = logging.getLogger(__name__)
 
 
 class PollXBlock(XBlock):
     """
-    TO-DO: document what your XBlock does.
+    PollXBlock
     """
     display_name = String(help="Name of the component in the edX platform", scope=Scope.settings, default="Poll XBlock")
 
@@ -24,7 +33,9 @@ class PollXBlock(XBlock):
 
     question = String(help="Poll question", scope=Scope.content, default="Did you enjoy this video?")
     # List of answers, in the form {'id': 'some id', 'text': 'the answer text'}
-    answers = List(help="Poll answers", scope=Scope.content, default=[{'id': 'yes', 'text': 'Yes'}, {'id': 'no', 'text': 'No'}, {'id': 'other', 'text': 'No opinion'}])
+    answers = List(help="Poll answers",
+                   scope=Scope.content,
+                   default=[{'id': 'yes', 'text': 'Yes'}, {'id': 'no', 'text': 'No'}, {'id': 'no_opinion', 'text': 'No opinion'}])
     reset = Boolean(help="Can reset/revote many time", scope=Scope.content, default=False)
 
     def resource_string(self, path):
@@ -106,7 +117,6 @@ class PollXBlock(XBlock):
             return {'poll_answers': self.poll_answers,
                     'total': sum(self.poll_answers.values()),
                     'callback': {'objectName': 'Conditional'}}
-        # TODO
         else:  # return error message
             return {'error': 'Unknown Command!'}
 
@@ -125,7 +135,6 @@ class PollXBlock(XBlock):
 
             self.poll_answer = ''
             return {'status': 'success'}
-        # TODO
         else:  # return error message
             return {'error': 'Unknown Command!'}
 
@@ -191,39 +200,45 @@ class PollXBlock(XBlock):
           <answers>
             <answer id="yes">Yes</answer>
             <answer id="no">No</answer>
-            <answer id="other">No opinion</answer>
+            <answer id="no_opinion">No opinion</answer>
           </answers>
         </pollxblock>
         """
         block = runtime.construct_xblock_from_class(cls, keys)
 
-        # Check that the root has the correct tag
+        # pollxblock (root)
         if root.tag != 'pollxblock':
             raise UpdateFromXmlError(_('Every pollxblock must contain an "pollxblock" element.'))
 
+        # pollxblock.display_name
         if 'display_name' in root.attrib:
             display_name = unicode(root.get('display_name'))
         else:
             raise UpdateFromXmlError(_('Every "pollxblock" element must contain a "display_name" attribute.'))
 
+        # pollxblock.reset
         if 'reset' in root.attrib:
             reset = _str2bool(root.get('reset'), cls.reset.default)
         else:
             reset = cls.reset.default
 
+        # pollxblock > question
         question_el = root.find('question')
         if question_el is None:
             raise UpdateFromXmlError(_('Every pollxblock must contain a "question" element.'))
         else:
             question = _safe_get_text(question_el)
 
+        # pollxblock > answers
         answers_el = root.find('answers')
         if answers_el is None:
             raise UpdateFromXmlError(_('Every pollxblock must contain a "answers" element.'))
 
+        # pollxblock > answers > answer
         answers = []
         for answer_el in answers_el.findall('answer'):
             answer_dict = dict()
+            # pollxblock > answers > answer.id
             if 'id' in answer_el.attrib:
                 answer_dict['id'] = unicode(answer_el.get('id'))
             else:
@@ -256,7 +271,7 @@ class PollXBlock(XBlock):
         question_el = etree.SubElement(root, 'question')
         question_el.text = unicode(self.question)
 
-        # answer list
+        # answers
         answers_el = etree.SubElement(root, 'answers')
         for answer in self.answers:
             answer_el = etree.SubElement(answers_el, 'answer')
@@ -277,13 +292,27 @@ def _safe_get_text(element):
     return unicode(element.text) if element.text is not None else u""
 
 
-def _str2bool(value, default=False):
+def _str2bool(s, default=False):
     """
-    TO-DO: document what your function does.
+    Convert String to Boolean
+
+    Args:
+        s (String): String to be converted.
+        default (Boolean): If s conforms to none of the keywords(True/Yes/False/No), returns default
+
+    Returns:
+        'True'  => True
+        'true'  => True
+        'Yes'   => True
+        'yes'   => True
+        'False' => False
+        'false' => False
+        'No'    => False
+        'no'    => False
     """
-    if isinstance(value, (str, unicode)):
-        if value.lower() in ['true', 'yes']:
+    if isinstance(s, (str, unicode)):
+        if s.lower() in ['true', 'yes']:
             return True
-        elif value.lower() in ['false', 'no']:
+        elif s.lower() in ['false', 'no']:
             return False
     return default
