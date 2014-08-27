@@ -27,6 +27,7 @@ setup(
     packages=[
         'pollxblock',
     ],
+    # TODO: current XBlock is incompatible with pytz==2012h, python-dateutil==2.1
     #install_requires=[
     #    'XBlock',
     #],
